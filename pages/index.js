@@ -5,7 +5,7 @@ import getW3tsWithSigner from "../abi/w3ts/getW3tsWithSigner";
 const Index = () => {
   const [infoMessage, setInfoMessage] = useState("");
   const [currentAccount, setCurrentAccount] = useState("");
-  const [userNftBalance, setuserNftBalance] = useState(0);
+  const [userNftBalance, setuserNftBalance] = useState("loading...");
 
   useEffect(() => {
     (async () => {
@@ -57,7 +57,7 @@ const Index = () => {
     setInfoMessage("Confirm mint");
     try {
       const tx = await (await getW3tsWithSigner()).mint(id);
-      setInfoMessage("Start minting...");
+      setInfoMessage("Minting in progress...");
       console.log("tx: ", tx);
       const response = await tx.wait();
       console.log("response: ", response);
