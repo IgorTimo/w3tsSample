@@ -2,12 +2,14 @@ import { Contract } from "ethers";
 import defaultProvider from "../defaultProvider";
 
 const abi = [
-  "function balanceOf(address owner, uint256 id) public view returns (uint256)",
-  "function mint(uint id) public"
+  "function balancesOf(address owner) public view returns (uint8[4])",
+  "function totalWlSupplay() public view returns (uint)",
+  "function mint(uint8 id) public",
+  "function mintWL() public"
 ];
 
 const w3ts = new Contract(
-  "0xc76b95c12B0c717AC8D46eaf7Acbb264482B0EF4",
+  "0x67c12E2614B042E357A334EEB853FDB7a72051e1",
   abi,
   defaultProvider
 );

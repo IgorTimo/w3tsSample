@@ -3,16 +3,29 @@ import w3ts from "../abi/w3ts/w3ts";
 import getW3tsWithSigner from "../abi/w3ts/getW3tsWithSigner";
 
 const Index = () => {
+  const [totalWlSupplay, setTotalWlSupplay] = useState(0n);
   const [infoMessage, setInfoMessage] = useState("");
   const [currentAccount, setCurrentAccount] = useState("");
-  const [userNftBalance, setuserNftBalance] = useState("loading...");
+  const [userNftBalances, setUserNftBalances] = useState([0n, 0n, 0n, 0n]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const totalWlSupplay = await w3ts.totalWlSupplay();
+        console.log("totalWlSupplay: ", totalWlSupplay);
+        setTotalWlSupplay(totalWlSupplay);
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     (async () => {
       if (currentAccount) {
         try {
-          const balance = await w3ts.balanceOf(currentAccount, 1);
-          setuserNftBalance(balance)
+          const balances = await w3ts.balancesOf(currentAccount);
+          setUserNftBalances(balances);
         } catch (error) {
           console.error(error);
         }
@@ -53,7 +66,7 @@ const Index = () => {
     }
   };
 
-  const mintNft = async (id) => {
+  const mintPart = async (id) => {
     setInfoMessage("Confirm mint");
     try {
       const tx = await (await getW3tsWithSigner()).mint(id);
@@ -62,8 +75,25 @@ const Index = () => {
       const response = await tx.wait();
       console.log("response: ", response);
       setInfoMessage("Success mint");
-      const balance = await w3ts.balanceOf(currentAccount, 1);
-      setuserNftBalance(balance)
+      const balances = await w3ts.balancesOf(currentAccount);
+      setUserNftBalances(balances);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const mintWL = async () => {
+    setInfoMessage("Confirm mint");
+    try {
+      const tx = await (await getW3tsWithSigner()).mintWL();
+      setInfoMessage("Minting in progress...");
+      console.log("tx: ", tx);
+      const response = await tx.wait();
+      console.log("response: ", response);
+      setInfoMessage("Success mint");
+      const balances = await w3ts.balancesOf(currentAccount);
+      setUserNftBalances(balances);
+      setTotalWlSupplay((prev) => prev + 1n);
     } catch (error) {
       console.error(error);
     }
@@ -71,12 +101,41 @@ const Index = () => {
 
   return (
     <div>
+      <h1>WL Supplay {totalWlSupplay+""}/5</h1>
       <h4>Last status: {infoMessage}</h4>
       {currentAccount ? (
         <>
           <h1>Current account: {currentAccount}</h1>
-          <h2>Balance of first nft: {userNftBalance + ""}</h2>
-          <button onClick={() => mintNft(1)}>Mint first nft</button>
+          <h2>Balances: {userNftBalances + ""}</h2>
+          <button
+            disabled={userNftBalances[0] === 1n || userNftBalances[3] === 1n}
+            onClick={() => mintPart(1)}
+          >
+            Mint first part
+          </button>
+          <button
+            disabled={userNftBalances[1] === 1n || userNftBalances[3] === 1n}
+            onClick={() => mintPart(2)}
+          >
+            Mint second part
+          </button>
+          <button
+            disabled={userNftBalances[2] === 1n || userNftBalances[3] === 1n}
+            onClick={() => mintPart(3)}
+          >
+            Mint third part
+          </button>
+          <br />
+          <br />
+          <br />
+          <button
+            disabled={
+              userNftBalances.reduce((acc, value) => acc + value, 0n) !== 3n
+            }
+            onClick={mintWL}
+          >
+            Mint WL
+          </button>
         </>
       ) : (
         <button onClick={connectMetamask}>Connect</button>
