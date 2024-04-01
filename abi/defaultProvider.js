@@ -1,5 +1,5 @@
 import { JsonRpcProvider } from "ethers";
 
-const defaultProvider = new JsonRpcProvider("https://rpc.sepolia.org");
+const defaultProvider = new JsonRpcProvider("https://sepolia.drpc.org");
 
 export default defaultProvider;

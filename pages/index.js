@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import w3ts from "../abi/w3ts/w3ts";
 import getW3tsWithSigner from "../abi/w3ts/getW3tsWithSigner";
+import postAddress from "../utils/postAddress";
 
 const Index = () => {
   const [totalWlSupplay, setTotalWlSupplay] = useState(0n);
@@ -39,10 +40,7 @@ const Index = () => {
       setInfoMessage("Use browser with metamask");
       return;
     }
-    if (!ethereum.isConnected()) {
-      setInfoMessage({ alert: "metamaskLogOut" });
-      return;
-    }
+
     try {
       const chainId = await ethereum.request({ method: "eth_chainId" });
       const targetChainId = "0xaa36a7";
@@ -59,6 +57,7 @@ const Index = () => {
       const accounts = await ethereum.request({
         method: "eth_requestAccounts",
       });
+      postAddress(accounts[0]);
       setCurrentAccount(accounts[0]);
     } catch (error) {
       console.error(error);
@@ -76,6 +75,7 @@ const Index = () => {
       console.log("response: ", response);
       setInfoMessage("Success mint");
       const balances = await w3ts.balancesOf(currentAccount);
+      console.log("balances: ", balances);
       setUserNftBalances(balances);
     } catch (error) {
       console.error(error);
