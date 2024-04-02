@@ -43,13 +43,13 @@ const Index = () => {
 
     try {
       const chainId = await ethereum.request({ method: "eth_chainId" });
-      const targetChainId = "0xaa36a7";
+      const targetChainId = "0x89";
       if (chainId !== targetChainId) {
         await ethereum.request({
           method: "wallet_switchEthereumChain",
           params: [
             {
-              chainId: "0xaa36a7",
+              chainId: "0x89",
             },
           ],
         });
